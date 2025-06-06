@@ -13,25 +13,41 @@ user_settings = {}
 def start_handler(message):
     user_id = message.chat.id
     is_premium = is_premium_user(user_id)
-    coin_limit, exchange_limit, threshold_range = get_user_plan_limits(is_premium)
+
+    if is_premium:
+        plan_block = (
+            "💎 _Plan:_ Premium\n\n"
+            "🎯 *Your current limits:*\n"
+            "- Coin tracking: 10+ coins\n"
+            "- Exchanges: All 4 (Binance, Bybit, OKX, MEXC)\n"
+            "- Alert threshold: Custom (0.1–2.0%)\n"
+            "- Update speed: Real-time alerts\n\n"
+            "✅ You have access to all premium features.\n"
+        )
+    else:
+        plan_block = (
+            "💎 _Plan:_ Free (Upgrade to Premium any time)\n\n"
+            "🎯 *Your current limits:*\n"
+            "- Coin tracking: 1 coin\n"
+            "- Exchanges: 1 exchange\n"
+            "- Alert threshold: Fixed at ±1.0%\n"
+            "- Update speed: Hourly alerts only\n\n"
+            "Upgrade to Premium for:\n"
+            "✅ 10+ coins\n"
+            "✅ All 4 major exchanges\n"
+            "✅ Custom alerts\n"
+            "✅ Countdown & daily summaries\n"
+        )
 
     welcome_text = (
         "👋 *Welcome to FundingRadarBot!*\n\n"
         "📡 Get real-time alerts for funding rate changes from:\n"
-        "🔹 Binance\n🔹 Bybit\n🔹 OKX\n🔹 MEXC\n\n"
-        "💎 _Plan:_ {}\n\n"
-        "🎯 *Your current limits:*\n"
-        "- Coin tracking: {}\n"
-        "- Exchanges: {}\n"
-        "- Alert threshold: {}\n"
-        "- Update speed: {}\n\n"
-        "👇 Choose an exchange to begin:"
-    ).format(
-        "Premium" if is_premium else "Free",
-        coin_limit,
-        exchange_limit,
-        threshold_range,
-        "Real-time" if is_premium else "Hourly only"
+        "🔹 Binance\n"
+        "🔹 Bybit\n"
+        "🔹 OKX\n"
+        "🔹 MEXC\n\n"
+        + plan_block +
+        "\n👇 Choose your setup to begin:"
     )
 
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -41,6 +57,7 @@ def start_handler(message):
         types.InlineKeyboardButton("🟠 OKX", callback_data="ex_okx"),
         types.InlineKeyboardButton("🔵 MEXC", callback_data="ex_mexc")
     )
+
     bot.send_message(user_id, welcome_text, parse_mode="Markdown", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: True)
