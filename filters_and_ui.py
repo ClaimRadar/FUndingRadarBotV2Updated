@@ -1,5 +1,5 @@
 user_alerts = {}
-premium_users = [123456789]  # Örnek premium ID listesi
+premium_users = [1055454475]  # Örnek premium ID listesi
 
 def set_user_alert(user_id, symbol, threshold):
     if user_id not in user_alerts:
