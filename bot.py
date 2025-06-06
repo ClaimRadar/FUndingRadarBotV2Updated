@@ -14,6 +14,7 @@ def start_handler(message):
     user_id = message.chat.id
     is_premium = is_premium_user(user_id)
 
+    # PREMIUM METİN BLOĞU
     if is_premium:
         plan_block = (
             "💎 _Plan:_ Premium\n\n"
@@ -60,6 +61,7 @@ def start_handler(message):
 
     bot.send_message(user_id, welcome_text, parse_mode="Markdown", reply_markup=markup)
 
+
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback_query(call):
     user_id = call.message.chat.id
@@ -70,7 +72,7 @@ def handle_callback_query(call):
 
         if selected_exchange in ["OKX", "MEXC"] and not is_premium:
             bot.answer_callback_query(call.id, "Premium only 🚫")
-            bot.send_message(user_id, "⚠️ Access to {} is only available for Premium users. Upgrade to continue.".format(selected_exchange))
+            bot.send_message(user_id, f"⚠️ Access to {selected_exchange} is only available for Premium users.\nUpgrade to continue.")
             return
 
         user_settings[user_id] = {"exchange": selected_exchange}
@@ -83,14 +85,18 @@ def handle_callback_query(call):
             types.InlineKeyboardButton("🟡 Mix Mode", callback_data="mode_mix"),
             types.InlineKeyboardButton("📊 General", callback_data="mode_general")
         )
-        bot.send_message(user_id, "✅ Exchange selected: *{}*\n\nNow select your funding alert mode:".format(selected_exchange), parse_mode="Markdown", reply_markup=markup)
+        bot.send_message(user_id, f"✅ Exchange selected: *{selected_exchange}*\n\nNow select your funding alert mode:",
+                         parse_mode="Markdown", reply_markup=markup)
 
     elif call.data.startswith("mode_"):
         selected_mode = call.data.split("_")[1]
         user_settings[user_id]["mode"] = selected_mode
         bot.answer_callback_query(call.id, f"Tracking mode set: {selected_mode}")
-        bot.send_message(user_id, f"🛠 Settings saved!\n\n🔁 You will now receive alerts for *{user_settings[user_id]['exchange']}* using *{selected_mode}* mode.", parse_mode="Markdown")
+        bot.send_message(user_id,
+                         f"🛠 Settings saved!\n\n🔁 You will now receive alerts for *{user_settings[user_id]['exchange']}* using *{selected_mode}* mode.",
+                         parse_mode="Markdown")
 
     elif call.data == "premium_features":
         bot.answer_callback_query(call.id, "Premium access 🔐")
-        bot.send_message(call.message.chat.id, "💎 Premium features include:\n- 10+ coin tracking\n- All 4 exchanges\n- Custom alerts\n- Countdown & daily summaries\n\nSubscribe for $7/month or $15/3 months.")
+        bot.send_message(call.message.chat.id,
+                         "💎 Premium features include:\n- 10+ coin tracking\n- All 4 exchanges\n- Custom alerts\n- Countdown & daily summaries\n\nSubscribe for $7/month or $15/3 months.")
